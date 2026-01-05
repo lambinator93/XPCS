@@ -1,0 +1,40 @@
+{    
+"BASE":
+"/Users/eriklamb/Documents/Data/PETRA/PETRA_P10_November2023/Beamtime_11017686/XPCS_Scans/Particle_2",
+    
+"298_batchinfo": "298K/NPS_01_00219/e4m/NPS_01_00219.batchinfo",
+"305_batchinfo": "305K/NPS_01_00334/e4m/NPS_01_00334.batchinfo",
+"325_batchinfo": "325K/NPS_01_00552/e4m/NPS_01_00552.batchinfo",
+"345_batchinfo": "345K/NPS_01_00579/e4m/NPS_01_00579.batchinfo",
+"365_batchinfo": "365K/NPS_01_00709/e4m/NPS_01_00709.batchinfo",
+"385_batchinfo": "385K/NPS_01_00779/e4m/NPS_01_00779.batchinfo",
+"405_batchinfo": "405K/NPS_01_00796/e4m/NPS_01_00796.batchinfo",
+"350_batchinfo": "350K/NPS_01_00868/e4m/NPS_01_00868.batchinfo",
+    
+"298_data": "298K/NPS_01_00219/e4m/NPS_01_00219_master.h5",
+"305_data": "305K/NPS_01_00334/e4m/NPS_01_00334_master.h5",
+"325_data": "325K/NPS_01_00552/e4m/NPS_01_00552_master.h5",
+"345_data": "345K/NPS_01_00579/e4m/NPS_01_00579_master.h5",
+"365_data": "365K/NPS_01_00709/e4m/NPS_01_00709_master.h5",
+"385_data": "385K/NPS_01_00779/e4m/NPS_01_00779_master.h5",
+"405_data": "405K/NPS_01_00796/e4m/NPS_01_00796_master.h5",
+"350_data": "350K/NPS_01_00868/e4m/NPS_01_00868_master.h5",
+    
+"298_processed": "298K/NPS_01_00219/e4m/processed/particle2_temp298K_scan219_crop5x5_NewMaskTrue_stabilityFalse.h5",
+"305_processed": "305K/NPS_01_00334/e4m/processed/particle2_temp305K_scan334_crop5x5_NewMaskTrue_stabilityFalse.h5",
+"325_processed": "325K/NPS_01_00552/e4m/processed/particle2_temp325K_scan552_crop5x5_NewMaskTrue_stabilityFalse.h5",
+"345_processed": "345K/NPS_01_00579/e4m/processed/particle2_temp345K_scan579_crop5x5_NewMaskTrue_stabilityFalse.h5",
+"365_processed": "365K/NPS_01_00709/e4m/processed/particle2_temp365K_scan709_crop5x5_NewMaskTrue_stabilityFalse.h5",
+"385_processed": "385K/NPS_01_00779/e4m/processed/particle2_temp385K_scan779_crop5x5_NewMaskTrue_stabilityFalse.h5",
+"405_processed": "405K/NPS_01_00796/e4m/processed/particle2_temp405K_scan796_crop5x5_NewMaskTrue_stabilityFalse.h5",
+"350_processed": "350K/NPS_01_00868/e4m/processed/particle2_temp350K_scan868_crop5x5_NewMaskTrue_stabilityFalse.h5",
+    
+"298_results": "298K/NPS_01_00219/e4m/results/particle2_temp298K_scan219_crop5x5_ms3_nr10ns1_bin1_st0_tb-1_newmaskTrue_tiltFalse.h5",
+"305_results": "305K/NPS_01_00334/e4m/results/particle2_temp305K_scan334_crop5x5_ms3_nr10ns1_bin1_st0_tb-1_newmaskTrue_tiltFalse.h5",
+"325_results": "325K/NPS_01_00552/e4m/results/particle2_temp325K_scan552_crop5x5_ms3_nr10ns1_bin1_st0_tb-1_newmaskTrue_tiltFalse.h5",
+"345_results": "345K/NPS_01_00579/e4m/results/particle2_temp345K_scan579_crop5x5_ms3_nr10ns1_bin1_st0_tb-1_newmaskTrue_tiltFalse.h5",
+"365_results": "365K/NPS_01_00709/e4m/results/particle2_temp365K_scan709_crop5x5_ms3_nr12ns1_bin1_st0_tb1800_newmaskTrue_tiltFalse.h5",
+"385_results": "385K/NPS_01_00779/e4m/results/particle2_temp385K_scan779_crop5x5_ms3_nr10ns1_bin1_st0_tb-1_newmaskTrue_tiltFalse.h5",
+"405_results": "405K/NPS_01_00796/e4m/results/particle2_temp405K_scan796_crop5x5_ms3_nr10ns1_bin1_st0_tb-1_newmaskTrue_tiltFalse.h5",
+"350_results": "350K/NPS_01_00868/e4m/results/particle2_temp350K_scan868_crop5x5_ms3_nr10ns1_bin1_st0_tb-1_newmaskTrue_tiltFalse.h5"
+}

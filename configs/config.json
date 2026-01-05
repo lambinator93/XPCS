@@ -1,0 +1,7 @@
+{
+ "NPS_base": "/Users/eriklamb/Documents/Data/PETRA/PETRA_P10_November2023/Beamtime_11017686/XPCS_Scans", 
+ "NBH_base": "/Volumes/Eriks_4TB/APSU_1004574_shpyrko202411",
+ "NBH_Mask_Result": "/Volumes/Eriks_4TB/APSU_1004574_shpyrko202411/A343_NaBH_att000020_320K_001/results/particleA7_temp320K_scan343_crop5x3_nr15ns1_bin1_st0_tb-1.h5",
+ "NPS_Mask_Result_5x5": "/Users/eriklamb/Documents/Data/PETRA/PETRA_P10_November2023/Beamtime_11017686/XPCS_Scans/Particle_2/298K/NPS_01_00219/e4m/results/particle2_temp298K_scan219_crop5x5_nr10ns1_bin1_st0_tb-1_newmask_True.h5",    
+"NPS_Mask_Result_6x6":   "/Users/eriklamb/Documents/Data/PETRA/PETRA_P10_November2023/Beamtime_11017686/XPCS_Scans/Particle_2/298K/NPS_01_00219/e4m/results/particle2_temp298K_scan219_crop6x6_nr20ns1_bin1_st0_tb750.h5"
+}

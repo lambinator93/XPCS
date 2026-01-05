@@ -1,0 +1,12 @@
+{
+ "Beamline" : "8IDE_2025_3",
+ "Geometry" : "Vertical",
+ "Compound" : "IPA_NBH",
+ "Particle" : "A4",
+ "Base"     : "/Users/eriklamb/Desktop/shpyrko202510/",
+ "Processed": "processed/",
+    
+ "73":  "A073_IPA_NBH_1_att0100_260K_001/",
+    
+ "73_processed" : "IPA_NBH_particleA4_temp260.0K_crop10x25_NewMaskTrue_stabilityTrue.h5"
+}

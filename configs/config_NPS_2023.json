@@ -1,0 +1,9 @@
+{
+ "Beamline": "P10",
+ "Geometry": "Horizontal",
+ "Compound": "NPS_Tet",
+ "Particle": "2",
+ "Base": "/Users/eriklamb/Documents/Data/PETRA/PETRA_P10_November2023/Beamtime_11017686/raw/",
+ "90": "NPS_TET_01_00090/e4m/",
+ "90T" : "300"
+}

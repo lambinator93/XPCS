@@ -3,7 +3,7 @@ import numpy as np
 """""""""
 --- G2 Autocorrelation Function
 """""""""
-def g2calc(Img, mask):
+def g2calc(Img, mask,dpl=4):
     """""""""
     G2CALC: Function to calculate pre-initialized tensors 'G2, IP & IF' in
     a multi-tau G2 calculation scheme from a stack of 'nframes' 
@@ -15,7 +15,7 @@ def g2calc(Img, mask):
 
     """""""""
     
-    dpl = 4
+    #dpl = 4
     
     nframes, rows, cols = Img.shape
     
@@ -36,7 +36,7 @@ def g2calc(Img, mask):
     GC = np.zeros((1, (maxLevel+1)*dpl-1)) # counter for the G2 sums
     
     # --- Start of loop over all frames
-    for i in range(1,nframes,1):
+    for i in range(1,nframes+1,1):
         # --- Level 1: a) update image stacks
         iFrame = Img[i-1,:,:]
         ImgMask = iFrame[mask == 1] # unmasked pixels on the ROI
@@ -89,6 +89,35 @@ def g2calc(Img, mask):
 """""""""
 --- Two-Time Correlation Function
 """""""""
+
+def TwoTime(Img):
+    """
+    TWOTIME: Function to calculate the two-time correlation matrix.
+    INPUT: Img(nframes, rows, cols) - Stack of images.
+    OUTPUT: Correlation Matrix C(nframes, nframes)
+    """
+    
+    n2tframes = Img.shape[0]  # Number of time frames
+    N_pixels = Img.shape[1] * Img.shape[2]  # Total pixels per frame
+    C = np.zeros((n2tframes, n2tframes), dtype=np.single)
+
+    # Compute mean intensity for each time frame
+    mean_intensity = np.mean(Img, axis=(1, 2))  # Shape (n2tframes,)
+
+    # Compute correlation matrix
+    for k in range(n2tframes):
+        for l in range(k, n2tframes):
+            # Compute intensity product averaged over pixels
+            numerator = np.sum(Img[k, :, :] * Img[l, :, :]) / N_pixels
+            denominator = mean_intensity[k] * mean_intensity[l]  # Product of means
+            C[k, l] = numerator / denominator  # Apply normalization
+
+    # Fill upper triangle (C is symmetric)
+    for k in range(n2tframes):
+        C[k+1:n2tframes, k] = C[k, k+1:n2tframes]
+
+    return C
+
 def twotime(Img):
     """""""""
     TWOTIME: Function to calculate the two-time correlation matrix. Seems somewhat slow
@@ -105,19 +134,26 @@ def twotime(Img):
     C = np.zeros((n2tframes, n2tframes), dtype=np.single)
     
     # --- Some pre-calculations
-    Iaqt = np.zeros((n2tframes,1,1), dtype=np.single)
+    #Iaqt = np.zeros((n2tframes,1,1), dtype=np.single)
     
+    """""
     for k in range(n2tframes):
         Iaqt[k,0,0] = np.mean(Img[k,:,:])
         #Mark's Version
-        Img[k,:,:] = (Img[k,:,:]-Iaqt[k,0,0])/Iaqt[k,0,0]         
+        Img[k,:,:] = (Img[k,:,:]-Iaqt[k,0,0])/Iaqt[k,0,0]
+    """""
+    New_Img = np.zeros((Img.shape))
+    for k in range(n2tframes):
+        Iaqt = np.mean(Img[k,:,:])
+        #Mark's Version
+        New_Img[k,:,:] = (Img[k,:,:]-Iaqt)/Iaqt
         
     # --- Main loop
     for k in range(n2tframes):
         for l in range(n2tframes):
             if l < k:
                 # Modified Mark version: summing (normalize later)
-                C[k,l] = np.sum(Img[k,:,:]*Img[l,:,:])
+                C[k,l] = np.sum(New_Img[k,:,:]*New_Img[l,:,:])
                                 
     # --- Fill upper corner
     for k in range(n2tframes):
@@ -136,7 +172,7 @@ def twotime(Img):
             C[k,k] = (1/2)*(C[k-1,k]+C[k,k-1])
     
     # --- Normalize
-    C/=Img.shape[1]**2
+    C/=Img.shape[1]
     
     return C
                           
