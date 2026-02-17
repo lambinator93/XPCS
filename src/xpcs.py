@@ -34,17 +34,39 @@ from PIL import Image, ImageSequence
 
 #g2_exp = g2(q,dt)-1 = A*np.exp(-(t/tt)**b)
 def kev_to_angstroms(E):
-    return 12.398/E
+    """Convert X-ray energy in keV to wavelength in Angstroms."""
+    return 12.398 / E
 
 def angstroms_to_kev(l):
-    return 12.398/l
+    """Convert wavelength in Angstroms to X-ray energy in keV."""
+    return 12.398 / l
 
-def scherrer(sigma,theta,wavelength,K):
-    beta = 2*sigma*np.sqrt(2*np.log(2))
-    return K*wavelength/(beta*np.cos(np.radians(theta)))
+def scherrer(sigma, theta, wavelength, K):
+    """
+    Estimate crystallite size using the Scherrer equation.
+
+    Parameters
+    ----------
+    sigma : float
+        Gaussian standard deviation of the peak in radians.
+    theta : float
+        Bragg angle in degrees.
+    wavelength : float
+        X-ray wavelength in Angstroms.
+    K : float
+        Scherrer constant (shape factor), typically ~0.9.
+
+    Returns
+    -------
+    float
+        Crystallite size in Angstroms.
+    """
+    beta = 2 * sigma * np.sqrt(2 * np.log(2))
+    return K * wavelength / (beta * np.cos(np.radians(theta)))
 
 def gaussian(x, A, mu, sigma, c):
-    return A*np.exp(-0.5 * ((x - mu)/sigma)**2) + c
+    """Gaussian function with amplitude A, center mu, width sigma, and offset c."""
+    return A * np.exp(-0.5 * ((x - mu) / sigma)**2) + c
 
 def skew_gaussian(x,A,mu,sigma,alpha,c):
     return A*np.exp(-0.5 * ((x - mu)/sigma)**2)*(1+erf(alpha*(x-mu)/np.sqrt(2))) + c
@@ -128,11 +150,28 @@ def skew_gaussian_2d(xy, amplitude, x0, y0, sigma_x, sigma_y, alpha_x, alpha_y, 
     return g.ravel()
 
 
-def integrated_gaussian(det,stdy=200,stdx=10):
-    
-        #Central Slice
-    #central_slice = det.shape[0]//2
+def integrated_gaussian(det,stdy=200,stdx=10,maxfev=5000):
+    """
+    Fit 1D Gaussians to the integrated intensity along each axis of a 2D detector image.
 
+    Parameters
+    ----------
+    det : np.ndarray
+        2D detector image (rows, cols).
+    stdy : float
+        Initial guess for the standard deviation along the horizontal (column) axis.
+    stdx : float
+        Initial guess for the standard deviation along the vertical (row) axis.
+    maxfev : int
+        Maximum number of function evaluations for curve_fit.
+
+    Returns
+    -------
+    popt1, popt2 : np.ndarray
+        Optimized parameters [A, mu, sigma, c] for horizontal and vertical fits.
+    pcov1, pcov2 : np.ndarray
+        Covariance matrices for horizontal and vertical fits.
+    """
     ### Sum data along both axes for fitting ###
     y1 = np.sum(det[:,:],axis=0)
     x1 = np.arange(y1.shape[0])
@@ -140,14 +179,32 @@ def integrated_gaussian(det,stdy=200,stdx=10):
     y2 = np.sum(det[:,:],axis=1)
     x2 = np.arange(y2.shape[0])
 
-    popt1, pcov1 = curve_fit(gaussian, x1, y1, p0=[np.max(y1), np.argmax(y1) , stdy, np.min(y1[np.nonzero(y1)])])
-    popt2, pcov2 = curve_fit(gaussian, x2, y2, p0=[np.max(y2), np.argmax(y2) , stdx, np.min(y2[np.nonzero(y2)])])
+    nonzero1 = y1[np.nonzero(y1)]
+    nonzero2 = y2[np.nonzero(y2)]
+    bg1 = np.min(nonzero1) if nonzero1.size > 0 else 0
+    bg2 = np.min(nonzero2) if nonzero2.size > 0 else 0
 
-    
+    popt1, pcov1 = curve_fit(gaussian, x1, y1, p0=[np.max(y1), np.argmax(y1), stdy, bg1], maxfev=maxfev)
+    popt2, pcov2 = curve_fit(gaussian, x2, y2, p0=[np.max(y2), np.argmax(y2), stdx, bg2], maxfev=maxfev)
+
     return popt1, popt2, pcov1, pcov2
 
 def com(det):
-    
+    """
+    Calculate the center of mass (intensity-weighted centroid) of a 2D image.
+
+    Parameters
+    ----------
+    det : np.ndarray
+        2D detector image (rows, cols).
+
+    Returns
+    -------
+    row_cm : float
+        Center of mass along the column (x) axis.
+    col_cm : float
+        Center of mass along the row (y) axis.
+    """
     x = np.arange(det.shape[1])
     y = np.arange(det.shape[0])
     X, Y = np.meshgrid(x, y)
@@ -162,8 +219,22 @@ def com(det):
     return row_cm, col_cm
 
 
-def g2_exp(t,A,tt,b):
-    return 1+A*np.exp(-(t/tt)**b)**2
+def g2_exp(t, A, tt, b):
+    """
+    Single-exponential g2 model: g2(t) = 1 + A * exp(-(t/tau)^beta)^2.
+
+    Parameters
+    ----------
+    t : float or np.ndarray
+        Delay time(s).
+    A : float
+        Amplitude (contrast).
+    tt : float
+        Relaxation time tau.
+    b : float
+        Stretching exponent beta.
+    """
+    return 1 + A * np.exp(-(t / tt)**b)**2
 
 def g2_exp_pow(t,A,tt1,tt2,b,a):
     return 1+A*(np.exp(-(t/tt1)**b)+t/tt2**a)**2
@@ -186,47 +257,70 @@ def tau(q,A,c,a):
 def raleigh(lam,fl,dl):
     return 1.22*fl*lam/dl
 
-def newtth(Ein,Ebl,Th1):
-    
-    #Commonly used XRD energies in keV
-    Cu = 8.0478
-    Fe = 6.3998
-    Co = 6.9257
-    Mo = 17.45
-    
-    if isinstance(Ein, str):
-        if Ein == 'Mo':
-            Ein = None 
-            Ein = 17.45
-        if Ein == 'Cu':
-            Ein = None 
-            Ein = 8.0478
-        if Ein == 'Co':
-            Ein = None 
-            Ein = 6.9257
-        if Ein == 'Fe':
-            Ein = None 
-            Ein = 6.3998
- 
-    #Energies are in keV, 2Thetas in degrees
-    ThNew = np.arcsin((Ein/Ebl)*np.sin((Th1/2)*np.pi/180))*180/np.pi
-    #print(Th2*2)
-    return 2*ThNew
+def newtth(Ein, Ebl, Th1):
+    """
+    Convert a 2-theta angle from one X-ray energy to another.
 
-def th2q(En,tth):
-    wl = 1.2398*10/En
-    return (4*np.pi/wl)*np.sin(tth*np.pi/(180*2))
+    Parameters
+    ----------
+    Ein : float or str
+        Input energy in keV, or one of 'Cu', 'Fe', 'Co', 'Mo' for common
+        X-ray tube energies.
+    Ebl : float
+        Energy (keV) at which the original 2-theta was measured.
+    Th1 : float
+        Original 2-theta angle in degrees.
+
+    Returns
+    -------
+    float
+        New 2-theta angle in degrees at energy Ein.
+    """
+    # Commonly used XRD energies in keV
+    XRD_ENERGIES = {'Cu': 8.0478, 'Fe': 6.3998, 'Co': 6.9257, 'Mo': 17.45}
+
+    if isinstance(Ein, str):
+        if Ein in XRD_ENERGIES:
+            Ein = XRD_ENERGIES[Ein]
+        else:
+            raise ValueError(f"Unknown X-ray source '{Ein}'. Choose from {list(XRD_ENERGIES.keys())}.")
+
+    # Energies are in keV, 2Thetas in degrees
+    ThNew = np.arcsin((Ein / Ebl) * np.sin((Th1 / 2) * np.pi / 180)) * 180 / np.pi
+    return 2 * ThNew
+
+def th2q(En, tth):
+    """
+    Convert 2-theta angle to momentum transfer Q.
+
+    Parameters
+    ----------
+    En : float
+        X-ray energy in keV.
+    tth : float or np.ndarray
+        2-theta angle(s) in degrees.
+
+    Returns
+    -------
+    float or np.ndarray
+        Momentum transfer Q in inverse Angstroms.
+    """
+    wl = kev_to_angstroms(En)
+    return (4 * np.pi / wl) * np.sin(tth * np.pi / (180 * 2))
 
 def beta_Michelson(arr):
+    """Compute the Michelson contrast (visibility) of an array: (Imax - Imin) / (Imax + Imin)."""
     I_min = np.min(arr)
     I_max = np.max(arr)
-    return (I_max-I_min)/(I_max+I_min)
+    return (I_max - I_min) / (I_max + I_min)
 
 def beta(arr):
-    return np.std(arr)/(np.mean(arr))
+    """Compute the speckle contrast: std(arr) / mean(arr)."""
+    return np.std(arr) / (np.mean(arr))
 
 def trunc(values, decs=0):
-    return np.trunc(values*10**decs)/(10**decs)
+    """Truncate values to a given number of decimal places."""
+    return np.trunc(values * 10**decs) / (10**decs)
 
 def binning(det,binSize,pixSize=0.075,mode='mean'):
     # To bin the 800x800 to 400x400, we first reshape the array
@@ -537,14 +631,12 @@ def create_square_mask(arr, block_shape, mask_shape):
     
     blocks = []
     coords = []
-    dPixels = [] #Number of Pixel distance in [x, y]
-    
+
     for i in range(0, ny, 1):
         x = x0
         for j in range(0, nx, 1):
             blocks.append(arr[:,(y-dy//2):(y+dy//2), (x-dx//2):(x+dx//2)])
-            coords.append((x, y)) 
-            dPixels
+            coords.append((x, y))
             x += dx
         y += dy
     return blocks, coords
@@ -682,7 +774,7 @@ def load_batchinfo(file_path,splitter):
                     if value.startswith("'") and value.endswith("'"):
                         value = value[1:-1]
                     elif value.startswith("[") and value.endswith("]"):
-                        value = eval(value)
+                        value = json.loads(value)
                     
             parameters[key] = value
     return parameters
