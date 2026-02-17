@@ -167,12 +167,12 @@ def twotime(Img):
         elif k == 0:
             #Calculate the diagonal as average
             C[k,k] = (1/2)*(C[k+1,k]+C[k,k-1])
-        elif k == n2tframes:
+        elif k == n2tframes - 1:
             #Calculate the diagonal as average
             C[k,k] = (1/2)*(C[k-1,k]+C[k,k-1])
     
-    # --- Normalize
-    C/=Img.shape[1]
+    # --- Normalize by total number of pixels
+    C /= (Img.shape[1] * Img.shape[2])
     
     return C
                           
